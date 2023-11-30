@@ -1,40 +1,54 @@
 <?php
 
-session_start();
-
-define('TARGET_DIR',"uploads/");
-define('IMG_EXTS', array('.jpg','.jpeg','.png','.gif'));
-
-require "helpers/mysql.php";
-$db = new DataBase;
-require "model/files.php";
-require "helpers/stringhelper.php";
-
-if(isset($_GET['action'])) {
-    if($_GET['action'] == 'logout') {
-        session_unset(); 
+  // output data of each row
+  echo '<table id="terem">';
+  $sorId = NULL;
+  $modositandoNev = '';
+  
+  while($row = $result->fetch_assoc()) {
+    $class = "tanulo";
+    if($row['sor'] == 3 and $row['oszlop'] == 3) $class = "tanar";
+    if($row["sor"] != $sorId) {
+        if($sorId != NULL) echo "        </tr>";
+        echo "        <tr>";
+        $sorId = $row["sor"];
+        $elozoOszlop = -1;
     }
-}
+    // kiírjuk az adott sor üres mezőjét
+    while($row['oszlop'] != $elozoOszlop + 1) {
+        echo '<td class="tolto"> </td>';
+        $elozoOszlop++;
+    }
 
+    // van-e profilképe?
+    
+    $img = FALSE;
+
+    foreach(IMG_EXTS as $ext) {
+        $imgFile = TARGET_DIR . $row["id"].$ext;
+        if (file_exists($imgFile)) {
+            $img = '<img src="'.$imgFile.'?time='.time().'" style="width: 50px;"><br>';
+            break;
+        }
+    }
+    // kiírjuk az adott sor adott oszlop tanulóját
+    echo '<td class="'.$class.'">';
+    echo '<a href="index.php?action=user&id='.$row["id"].'">';
+    if($img) echo $img;
+    echo $row['nev'];
+    echo '</a>';
+    echo '</td>';
+
+    if($row['sor'] == 0) {
+        if($row['oszlop'] == 0) echo '<td rowspan="4" class="tolto" style="width: 40px;"></td>'; 
+        //elseif($row['oszlop'] == 2) echo '<td rowspan="3" class="tolto"></td>';
+    }
+    $elozoOszlop = $row['oszlop'];
+
+    if(isset($_GET['id'])) {
+        if ($row["id"] == $_GET['id']) $modositandoNev = $row['nev'];
+    } 
+  }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ülésrend</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/index.css">
-</head>
-<body>
-<?php
-
-require 'controller/osztaly.php';
-include 'view/menu.php';
-
-renderView($osztaly);
-
-?>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-</body>
-</html>
+        </tr>
+    </table>

@@ -1,3 +1,21 @@
+<script>
+function showHint(str) {
+  if (str.length > 1) {
+    document.getElementById("txtHint").innerHTML = "";
+    return;
+  } else {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("txtHint").innerHTML = this.responseText;
+      }
+    };
+      xmlhttp.open("GET","controller/hint.php?q=" + str, true);
+      xmlhttp.send();
+  }
+}
+</script>
+
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
 <div class="container-fluid">
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
@@ -13,6 +31,7 @@ if(!isset($_GET['action'])) echo " active";
 elseif(isset($_GET['action'])) {
     if($_GET['action'] == "logout") echo " active";
 }
+
 echo '"> ÜLÉSREND </a></li>';
 if(isset($_SESSION['felhasznalonev'])) {
     echo '<li class="nav-item"><a href="index.php?action=datamod" class="nav-link';
@@ -29,12 +48,15 @@ else {
         if($_GET['action'] == "login") echo " active";
     }
     echo '"> BELÉPÉS </a></li>';
+    
 }
+
 ?>
+
       </ul>
       <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Keresés" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Keresés</button>
+        <input class="form-control me-2" type="search" placeholder="Keresés" aria-label="Search" onkeyup="showHint(this.value) ">
+        <button class="btn btn-outline-success" type="submit">Keresés</button> 
       </form>
     </div>
   </div>
@@ -42,3 +64,8 @@ else {
 <?php
 if(isset($msg)) echo "<h2>$msg</h2>";
 ?>
+</head>
+<body>
+<p>Nevek: <span id="txtHint"></span></p>
+</body>
+</html>

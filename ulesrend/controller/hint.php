@@ -18,6 +18,7 @@ $a[] = "V. Szabolcs";
 $a[] = "R. Dávid";
 
 
+
 // Paraméter
 $q = $_REQUEST["q"];
 
@@ -39,5 +40,5 @@ if ($q !== "") {
 }
 
 // Ha nincs találat
-echo $hinty === "" ? "Nincs találat" : $hinty;
+echo $hinty === "" ? "Nincs" : $hinty;
 ?>
